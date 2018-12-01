@@ -2,25 +2,22 @@
 //writen: 11/28/18 using arduino nano v3 & RXB6 RF reciever
 //data pin from RXB6 ---> D10
 //D13 controls on board LED
-//D5 to controls a switch 
-
-
+//D5 to control switch
 #include <SoftwareSerial.h>
 
-//Need to simulate a TX RX port because the pins on the board get overriden if usb power is used
 SoftwareSerial mySerial(10, 11); // RX, TX
 
 void setup() {
   //intilizing outputs
   pinMode(13, OUTPUT);
   pinMode(5, OUTPUT);
-  
+
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
   while (!Serial) {
     ; // waits for serial port to connect from the computer
   }
-  Serial.println("Connected!");
+  Serial.println("Link Established");
 
   // set the data rate for the SoftwareSerial port
   mySerial.begin(2000);
@@ -28,30 +25,57 @@ void setup() {
 }
 
 void loop() { // run over and over
-  
-  if (mySerial.available()) {
-    //writes the input from the reciver to the serial monitor
-    Serial.write(mySerial.read());
-    //Turns on the LED and digital pin 5 when the correct messge is recieved
-    if (mySerial.read() == "Okay this is epic")
+  /* This section of code polls for a single character from the RF module
+     if the signal is recieved, the on board LED13 will turn on
+     otherwise if a signal is not recieved the LED will go off
+  */
+
+  int index = 0;
+  if (mySerial.available())
+  {
+
+    while (mySerial.read() == '@')
     {
+      Serial.print("Connection Received\n");
       digitalWrite(13, HIGH);
       digitalWrite(5, HIGH);
     }
-    //Turns off the LED and digital pin 5 when the correct messge is recieved
-    else if (mySerial.read() == "delet this")
-    {
-     digitalWrite(13, LOW);
-     digitalWrite(5, LOW);
-    }
-    else
-    {
-    //handels exceptions
-    if (Serial.available()) 
-    {
-    Serial.println("sike that's the wrong number\n");
-    }
-    }
+    digitalWrite(13, LOW);
+    digitalWrite(5, LOW);
+    Serial.print("Connection Lost\n");
+
   }
 
+
+  /*
+     This Section of code is Similar to the previous section
+     except a passcode is agreeded upon before hand, such that the LED will
+     only turn on if the specific code is recieved
+
+      int index = 0;
+      String tempstring;
+      while(index < 30)
+      {
+       tempstring += mySerial.read();
+       index++;
+      }
+      tempstring += "\n";
+      Serial.print(tempstring);
+      //Checks for the code "EPIC" from the transmitter in decimal
+      if (tempstring.indexOf("69807367") > 0 || tempstring.indexOf("65371321") > 0  )
+      //We noticed that the voltage of the raspberry pi would affect singal thereby changing the code
+      {
+      Serial.print("Connection Received\n");
+        digitalWrite(13, HIGH);
+        digitalWrite(5, HIGH);
+      }
+      else
+      {
+      digitalWrite(13, LOW);
+      digitalWrite(5, LOW);
+      }
+
+      Serial.print("Connection Lost\n");
+
+  */
 }
