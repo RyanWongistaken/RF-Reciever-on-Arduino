@@ -28,11 +28,11 @@ void loop() { // run over and over
   /* This section of code polls for a single character from the RF module
      if the signal is recieved, the on board LED13 will turn on
      otherwise if a signal is not recieved the LED will go off
-  */
 
-  int index = 0;
-  if (mySerial.available())
-  {
+
+    int index = 0;
+    if (mySerial.available())
+    {
 
     while (mySerial.read() == '@')
     {
@@ -44,38 +44,38 @@ void loop() { // run over and over
     digitalWrite(5, LOW);
     Serial.print("Connection Lost\n");
 
-  }
+    }
 
-
+    }*/
   /*
      This Section of code is Similar to the previous section
      except a passcode is agreeded upon before hand, such that the LED will
      only turn on if the specific code is recieved
-
-      int index = 0;
-      String tempstring;
-      while(index < 30)
-      {
-       tempstring += mySerial.read();
-       index++;
-      }
-      tempstring += "\n";
-      Serial.print(tempstring);
-      //Checks for the code "EPIC" from the transmitter in decimal
-      if (tempstring.indexOf("69807367") > 0 || tempstring.indexOf("65371321") > 0  )
-      //We noticed that the voltage of the raspberry pi would affect singal thereby changing the code
-      {
-      Serial.print("Connection Received\n");
-        digitalWrite(13, HIGH);
-        digitalWrite(5, HIGH);
-      }
-      else
-      {
-      digitalWrite(13, LOW);
-      digitalWrite(5, LOW);
-      }
-
-      Serial.print("Connection Lost\n");
-
   */
+  int index = 0;
+  String tempstring;
+  while (index < 30)
+  {
+    tempstring += mySerial.read();
+    index++;
+  }
+  tempstring += "\n";
+  Serial.print(tempstring);
+  //Checks for the code "EPIC" from the transmitter in decimal
+  if (tempstring.indexOf("69807367") > 0 || tempstring.indexOf("65371321") > 0  )
+    //We noticed that the voltage of the raspberry pi would affect singal thereby changing the code
+  {
+    Serial.print("Connection Received\n");
+    digitalWrite(13, HIGH);
+    digitalWrite(5, HIGH);
+  }
+  else
+  {
+    digitalWrite(13, LOW);
+    digitalWrite(5, LOW);
+  }
+
+  Serial.print("Connection Lost\n");
+
+
 }
